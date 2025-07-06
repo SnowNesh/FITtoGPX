@@ -1,3 +1,4 @@
 @echo off
-python "Z:\_Daten\_Projekte\_FITtoGPX\FITtoGPX.py"
+cd /d "%~dp0"
+python "FITtoGPX.py"
 pause
