@@ -13,6 +13,10 @@ for pkg in ("fitparse", "gpxpy"):
 INPUT_DIR, OUTPUT_DIR = "_FIT", "_GPX"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+# Garmin GPXTpx-Namespace
+GPTP_NS = "http://www.garmin.com/xmlschemas/TrackPointExtension/v1"
+EXT_SCHEMA = "http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd"
+
 for fname in os.listdir(INPUT_DIR):
     if not fname.lower().endswith(".fit"):
         continue
@@ -42,9 +46,21 @@ for fname in os.listdir(INPUT_DIR):
 
     # XML erzeugen und Zeitformat mit Millisekunden + 'Z' anpassen
     xml = gpx.to_xml()
+    # Zeitformat angleichen
     xml = re.sub(
         r'(<time>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.\d+)?(?:Z|[+\-]\d{2}:\d{2})?(</time>)',
         r'\1.000Z\2',
+        xml
+    )
+    # GPXTpx-Namespace in die Root einfügen
+    xml = xml.replace(
+        '<gpx xmlns="http://www.topografix.com/GPX/1/1"',
+        f'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxtpx="{GPTP_NS}"'
+    )
+    # SchemaLocation erweitern
+    xml = re.sub(
+        r'(xsi:schemaLocation="[^"]+)"',
+        lambda m: f"{m.group(1)} http://www.garmin.com/xmlschemas/TrackPointExtension/v1 {EXT_SCHEMA}" + '"',
         xml
     )
 
