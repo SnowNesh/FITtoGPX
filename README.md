@@ -1,13 +1,35 @@
 # FITtoGPX
 
-Generiert aus einer FIT-Datei eine GPX-Datei.  
-Grund des Projekts: Bei langen Garminaktivitäten lassen sich neuerdings keine GPX-Dateien mehr herunterladen, da sie laut Garmin "zu groß" sind.
+## English
 
-Übernommen wird:
-- Koordinate  
+This tool converts a `.fit` file into a `.gpx` file.
+
+**Background:**  
+For long Garmin activities, it is no longer possible to download GPX files directly from Garmin, as they are now considered "too large".
+
+The following data is included in the conversion:
+- Coordinates  
+- Elevation  
+- Time  
+- Heart rate  
+- Cadence  
+
+Garmin filenames are renamed from `GarminNumber_ACTIVITY.fit` to `activity_GarminNumber.gpx`, matching the naming convention Garmin uses when exporting GPX files.
+
+---
+
+## Deutsch
+
+Dieses Tool konvertiert eine `.fit`-Datei in eine `.gpx`-Datei.
+
+**Hintergrund:**  
+Bei langen Garmin-Aktivitäten ist es neuerdings nicht mehr möglich, GPX-Dateien direkt von Garmin herunterzuladen, da sie laut Garmin „zu groß“ sind.
+
+Folgende Daten werden übernommen:
+- Koordinaten  
 - Höhe  
 - Zeit  
 - Herzfrequenz  
-- Trittfrequenz
+- Trittfrequenz  
 
-Garmin Dateinamen werden umgedreht "GarminNumber_ACTIVITY.fit" → "activity_GarminNumber.gpx". Da die gpx Dateien von Garmin beim herunterladen so benannt werden.  
+Garmin-Dateinamen werden umbenannt von `GarminNumber_ACTIVITY.fit` zu `activity_GarminNumber.gpx`, entsprechend der Benennung, die Garmin beim GPX-Export verwendet.
