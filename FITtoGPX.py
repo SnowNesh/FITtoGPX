@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import os, sys, subprocess, xml.etree.ElementTree as ET, re
 from fitparse import FitFile
 import gpxpy, gpxpy.gpx
@@ -64,7 +61,7 @@ for fname in os.listdir(INPUT_DIR):
         xml
     )
 
-    # Dateiname umdrehen: "19610491551_ACTIVITY.fit" → "activity_19610491551.gpx"
+    # Dateiname umdrehen: "00000000000_ACTIVITY.fit" → "activity_00000000000.gpx"
     base = os.path.splitext(fname)[0]
     id_part, act_part = base.split("_", 1)
     new_name = f"{act_part.lower()}_{id_part}.gpx"
