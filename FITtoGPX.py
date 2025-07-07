@@ -2,7 +2,7 @@ import os, sys, subprocess, xml.etree.ElementTree as ET, re
 from fitparse import FitFile
 import gpxpy, gpxpy.gpx
 
-# Bibliotheken installieren
+# install libraries
 for pkg in ("fitparse", "gpxpy"):
     try: __import__(pkg)
     except ImportError: subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
@@ -41,7 +41,7 @@ for fname in os.listdir(INPUT_DIR):
 
         seg.points.append(pt)
 
-    # XML erzeugen und Zeitformat mit Millisekunden + 'Z' anpassen
+    # Create XML and change TimeFormat and add 'Z'
     xml = gpx.to_xml()
     # Zeitformat angleichen
     xml = re.sub(
@@ -49,19 +49,19 @@ for fname in os.listdir(INPUT_DIR):
         r'\1.000Z\2',
         xml
     )
-    # GPXTpx-Namespace in die Root einfügen
+    # GPXTpx-Namespace root insert
     xml = xml.replace(
         '<gpx xmlns="http://www.topografix.com/GPX/1/1"',
         f'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxtpx="{GPTP_NS}"'
     )
-    # SchemaLocation erweitern
+    # Extend SchemaLocation
     xml = re.sub(
         r'(xsi:schemaLocation="[^"]+)"',
         lambda m: f"{m.group(1)} http://www.garmin.com/xmlschemas/TrackPointExtension/v1 {EXT_SCHEMA}" + '"',
         xml
     )
 
-    # Dateiname umdrehen: "00000000000_ACTIVITY.fit" → "activity_00000000000.gpx"
+    # Meet Garmin GPX Filename convention: "00000000000_ACTIVITY.fit" → "activity_00000000000.gpx"
     base = os.path.splitext(fname)[0]
     id_part, act_part = base.split("_", 1)
     new_name = f"{act_part.lower()}_{id_part}.gpx"
