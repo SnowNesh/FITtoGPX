@@ -6,24 +6,29 @@ from fitparse import FitFile
 import gpxpy
 import gpxpy.gpx
 import logging
+from datetime import datetime
 
 INPUT_DIR, OUTPUT_DIR = "_FIT", "_GPX"
-LOG_FILE = "FITtoGPX.log"
-
-# Setup logging
-logging.basicConfig(
-    filename=LOG_FILE,
-    filemode="a",  # Append to the log file
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
+INFO_LOG_FILE = "info.log"
+ERROR_LOG_FILE = "error.log"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Garmin GPXTpx namespace and schema
 GPTP_NS = "http://www.garmin.com/xmlschemas/TrackPointExtension/v1"
 EXT_SCHEMA = "http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd"
+
+def log_info(message, fitfile):
+    """Write an info message with date and FIT filename."""
+    with open(INFO_LOG_FILE, "a", encoding="utf-8") as f:
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        f.write(f"{now} [{fitfile}] {message}\n")
+
+def log_error(message):
+    """Write an error message with date and error text."""
+    with open(ERROR_LOG_FILE, "a", encoding="utf-8") as f:
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        f.write(f"{now} {message}\n")
 
 for fname in os.listdir(INPUT_DIR):
     if not fname.lower().endswith(".fit"):
@@ -33,7 +38,7 @@ for fname in os.listdir(INPUT_DIR):
     try:
         fit = FitFile(fit_path)
     except Exception as e:
-        logging.error(f"Error opening FIT file {fname}: {e}")
+        log_error(f"Error opening FIT file {fname}: {e}")
         continue
 
     gpx = gpxpy.gpx.GPX()
@@ -74,10 +79,10 @@ for fname in os.listdir(INPUT_DIR):
                 seg.points.append(pt)
                 records_converted += 1
             except Exception as e:
-                logging.error(f"Error processing record in {fname}: {e}")
+                log_error(f"Error processing record in {fname}: {e}")
                 continue
     except Exception as e:
-        logging.error(f"Error parsing messages in {fname}: {e}")
+        log_error(f"Error parsing messages in {fname}: {e}")
         continue
 
     try:
@@ -106,13 +111,13 @@ for fname in os.listdir(INPUT_DIR):
             id_part, act_part = base.split("_", 1)
             new_name = f"{act_part.lower()}_{id_part}.gpx"
         except Exception as e:
-            logging.error(f"Error constructing output filename for {fname}: {e}")
+            log_error(f"Error constructing output filename for {fname}: {e}")
             new_name = base + ".gpx"
 
         out_path = os.path.join(OUTPUT_DIR, new_name)
         with open(out_path, "w", encoding="utf-8") as f:
             f.write(xml)
-        logging.info(f"Successfully converted {fname} to {new_name} ({records_converted} records).")
+        log_info(f"Successfully converted to {new_name} ({records_converted} records).", fname)
     except Exception as e:
-        logging.error(f"Error creating or writing GPX for {fname}: {e}")
+        log_error(f"Error creating or writing GPX for {fname}: {e}")
         continue
