@@ -2,11 +2,6 @@ import os, sys, subprocess, xml.etree.ElementTree as ET, re
 from fitparse import FitFile
 import gpxpy, gpxpy.gpx
 
-# install libraries
-for pkg in ("fitparse", "gpxpy"):
-    try: __import__(pkg)
-    except ImportError: subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
-
 INPUT_DIR, OUTPUT_DIR = "_FIT", "_GPX"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
