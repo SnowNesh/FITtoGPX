@@ -1,4 +1,4 @@
 @echo off
 cd /d "%~dp0"
-python "FITtoGPX.py"
+python "main.py"
 pause
