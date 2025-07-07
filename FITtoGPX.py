@@ -13,6 +13,7 @@ INFO_LOG_FILE = "info.log"
 ERROR_LOG_FILE = "error.log"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(INPUT_DIR, exist_ok=True)
 
 # Garmin GPXTpx namespace and schema
 GPTP_NS = "http://www.garmin.com/xmlschemas/TrackPointExtension/v1"
