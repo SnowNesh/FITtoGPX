@@ -1,6 +1,10 @@
-import os, sys, subprocess, xml.etree.ElementTree as ET, re
+import os
+import sys
+import xml.etree.ElementTree as ET
+import re
 from fitparse import FitFile
-import gpxpy, gpxpy.gpx
+import gpxpy
+import gpxpy.gpx
 
 INPUT_DIR, OUTPUT_DIR = "_FIT", "_GPX"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
