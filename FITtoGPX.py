@@ -8,8 +8,7 @@ import gpxpy
 import gpxpy.gpx
 from datetime import datetime
 
-# Constants for input/output directories and log/config file names
-INPUT_DIR, OUTPUT_DIR = "_FIT", "_GPX"
+# Constants for log/config file names
 INFO_LOG_FILE = "info.log"
 ERROR_LOG_FILE = "error.log"
 CONFIG_FILE = "config.ini"
@@ -17,23 +16,27 @@ CONFIG_FILE = "config.ini"
 def load_config():
     """
     Loads configuration from config.ini.
-    Returns: delete_fit (bool) - whether to delete the .fit file after conversion.
+    Returns: tuple (delete_fit (bool), input_dir (str), output_dir (str))
     """
     config = configparser.ConfigParser()
-    # Default value is false
-    defaults = {'delete_fit_after_conversion': 'false'}
+    defaults = {
+        'delete_fit_after_conversion': 'false',
+        'input_dir': '_FIT',
+        'output_dir': '_GPX'
+    }
     config['DEFAULT'] = defaults
     try:
         with open(CONFIG_FILE, "r", encoding="utf-8") as f:
             config.read_file(f)
     except Exception:
-        # Use defaults if config.ini does not exist or is not readable
         pass
-    # Always return boolean value for the flag
-    return config.getboolean('DEFAULT', 'delete_fit_after_conversion', fallback=False)
+    delete_fit = config.getboolean('DEFAULT', 'delete_fit_after_conversion', fallback=False)
+    input_dir = config.get('DEFAULT', 'input_dir', fallback='_FIT')
+    output_dir = config.get('DEFAULT', 'output_dir', fallback='_GPX')
+    return delete_fit, input_dir, output_dir
 
 # Read config at startup
-delete_fit = load_config()
+delete_fit, INPUT_DIR, OUTPUT_DIR = load_config()
 
 # Ensure output and input directories exist
 os.makedirs(OUTPUT_DIR, exist_ok=True)
