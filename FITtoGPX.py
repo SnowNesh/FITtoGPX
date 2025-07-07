@@ -5,8 +5,20 @@ import re
 from fitparse import FitFile
 import gpxpy
 import gpxpy.gpx
+import logging
 
 INPUT_DIR, OUTPUT_DIR = "_FIT", "_GPX"
+LOG_FILE = "FITtoGPX.log"
+
+# Setup logging
+logging.basicConfig(
+    filename=LOG_FILE,
+    filemode="a",  # Append to the log file
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Garmin GPXTpx namespace and schema
@@ -19,10 +31,9 @@ for fname in os.listdir(INPUT_DIR):
 
     fit_path = os.path.join(INPUT_DIR, fname)
     try:
-        # Try to open FIT file
         fit = FitFile(fit_path)
     except Exception as e:
-        print(f"Error opening FIT file {fname}: {e}")
+        logging.error(f"Error opening FIT file {fname}: {e}")
         continue
 
     gpx = gpxpy.gpx.GPX()
@@ -30,6 +41,8 @@ for fname in os.listdir(INPUT_DIR):
     seg = gpxpy.gpx.GPXTrackSegment()
     trk.segments.append(seg)
     gpx.tracks.append(trk)
+
+    records_converted = 0
 
     try:
         for rec in fit.get_messages("record"):
@@ -59,11 +72,12 @@ for fname in os.listdir(INPUT_DIR):
                     pt.extensions = ext
 
                 seg.points.append(pt)
+                records_converted += 1
             except Exception as e:
-                print(f"Error processing record in {fname}: {e}")
+                logging.error(f"Error processing record in {fname}: {e}")
                 continue
     except Exception as e:
-        print(f"Error parsing messages in {fname}: {e}")
+        logging.error(f"Error parsing messages in {fname}: {e}")
         continue
 
     try:
@@ -92,12 +106,13 @@ for fname in os.listdir(INPUT_DIR):
             id_part, act_part = base.split("_", 1)
             new_name = f"{act_part.lower()}_{id_part}.gpx"
         except Exception as e:
-            print(f"Error constructing output filename for {fname}: {e}")
+            logging.error(f"Error constructing output filename for {fname}: {e}")
             new_name = base + ".gpx"
 
         out_path = os.path.join(OUTPUT_DIR, new_name)
         with open(out_path, "w", encoding="utf-8") as f:
             f.write(xml)
+        logging.info(f"Successfully converted {fname} to {new_name} ({records_converted} records).")
     except Exception as e:
-        print(f"Error creating or writing GPX for {fname}: {e}")
+        logging.error(f"Error creating or writing GPX for {fname}: {e}")
         continue
